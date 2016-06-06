@@ -171,7 +171,7 @@ class Camera{
     var lookVec = vec3.transformMat3(vec3.create(), [0,0,1], camRotationMatrix);
     var upVec = vec3.transformMat3(vec3.create(), [0,1,0], camRotationMatrix);
     if(camera.moving != 0){
-      camera.pos = vec3.add(camera.pos, camera.pos, vec3.scale(vec3.create, lookVec, camera.speed/fps.value*camera.moving));
+      camera.pos = vec3.add(camera.pos, camera.pos, vec3.scale(vec3.create(), lookVec, camera.speed/fps.value*camera.moving));
     }
 
     this.matrix =  mat4.lookAt(mat4.create(), camera.pos, vec3.add(vec3.create(), camera.pos, lookVec), upVec);
