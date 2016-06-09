@@ -35,8 +35,11 @@ function init(resources) {
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
   billNode = new FreeSphericalBillboardNode(cloudModel.billNormal, 0, new RenderSGNode(cloudModel)); //billNormal, true für Wolken local orientiert; billNormal, false an scene orientiert; billUp, true spherical
+  //colorLight = new ColorLightSGNode([0,-0.5,0],[0,1,0,1],null);
   rootNode.append(floorNode);
+  //rootNode.append(colorLight);
   rootNode.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+
   camera.initInteraction();
 }
 
