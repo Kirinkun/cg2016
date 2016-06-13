@@ -16,6 +16,8 @@ var rootNode;
 var floorNode;
 var billNode;
 
+var elapsedTime, lastTime;
+
 const cloudModel = {
   position: [-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0, 0, -1, 0],
   normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
@@ -39,6 +41,9 @@ function init(resources) {
   rootNode.append(floorNode);
   rootNode.append(colorLight);
   rootNode.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+
+  lastTime = new Date().getTime();
+  elapsedTime = 0;
 
   camera.initInteraction();
 }
@@ -69,6 +74,18 @@ function render(timeInMilliseconds) {
 
   rootNode.render(context);
   requestAnimationFrame(render);
+
+  var now = new Date().getTime();
+  elapsedTime += (now - lastTime);
+  lastTime = now;
+  if(elapsedTime >= 100) {
+    elapsedTime -= 100;
+
+    document.getElementById('cords').innerHTML = "Camera:<br/> x: " + Math.round(camera.pos[0]*1000)/1000 +
+        "<br/> y: " + Math.round(camera.pos[1]*1000)/1000 +
+      "<br/> z: " + Math.round(camera.pos[2]*1000)/1000 +
+    "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
+  }
 }
 
 class Camera{
