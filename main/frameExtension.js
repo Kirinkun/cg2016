@@ -2,17 +2,21 @@
  * Created by Peter on 09.06.2016.
  */
 /**
- * a light node represents a light including light position and light properties (ambient, diffuse, specular)
+ * a color light node represents a light including light position and light properties (ambient, diffuse, specular)
  * the light position will be transformed according to the current model view matrix
+ * color will be set via the "color"-matrix in constructor
  */
+  /* Check this for spotlight
+  http://www.tomdalling.com/blog/modern-opengl/08-even-more-lighting-directional-lights-spotlights-multiple-lights/
+   */
 class ColorLightSGNode extends SGNode {
 
-  constructor(position,diffuse, children) {
+  constructor(position,color, children) {
     super(children);
     this.position = position || [0, 0, 0];
-    this.ambient = [[1,1,1]-diffuse,1];
-    this.diffuse = [diffuse,1];
-    this.specular = [diffuse,1];
+    this.ambient = [[1,1,1]-color,1];
+    this.diffuse = [color,1];
+    this.specular = [color,1];
     //uniform name
     this.uniform = 'u_light';
 
