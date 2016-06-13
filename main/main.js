@@ -31,12 +31,12 @@ const cloudModel = {
  * initializes OpenGL context, compile shader, and load buffers
  */
 function init(resources) {
-  gl = createContext(500,500);
+  gl = createContext();
   camera = new Camera(gl.canvas);
   rootNode = new ShaderSGNode(createProgram(gl, resources.vs_view, resources.fs_view));
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
-  billNode = new FreeSphericalBillboardNode(cloudModel.billNormal, 0, new RenderSGNode(cloudModel)); //billNormal, true für Wolken local orientiert; billNormal, false an scene orientiert; billUp, true spherical
+  billNode = new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel));
   colorLight = new ColorLightSGNode([0,-0.5,0],[0.0,0.0,0.0],createLightSphere(0.3,resources));
   rootNode.append(floorNode);
   rootNode.append(colorLight);
