@@ -32,6 +32,8 @@ const cloudModel = {
  */
 function init(resources) {
   gl = createContext();
+  initCube();
+
   camera = new Camera(gl.canvas);
   rootNode = new ShaderSGNode(createProgram(gl, resources.vs_view, resources.fs_view));
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
@@ -40,6 +42,12 @@ function init(resources) {
   colorLight = new ColorLightSGNode([0,-0.5,0],[0.0,0.0,0.0],createLightSphere(0.3,resources));
   rootNode.append(floorNode);
   rootNode.append(colorLight);
+  var s1 = new Scene1();
+  var trans = mat4.translate(mat4.create(),mat4.create(),[-1,0,-1]);
+  s1.setSceneTransformation(trans);
+
+  rootNode.append(s1);
+
   rootNode.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
 
   lastTime = new Date().getTime();
