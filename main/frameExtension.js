@@ -170,3 +170,41 @@ class FreeSphericalBillboardNode extends TransformationSGNode{
     super.render(context);
   }
 }
+
+class SceneNode extends SGNode {
+
+  constructor(children) {
+    super(children);
+    this.pos = mat4.create();
+    this.root = new TransformationExtendedNode(this.pos, children);
+
+    this.reset();
+  }
+
+  setSceneTransformation(transformation) {
+    this.pos = transformation;
+    this.root.setMatrix(transformation);
+  }
+
+  reset() {
+  }
+
+  isInRange(cameraPos,range) {
+    return (Math.pow(this.pos[0]-cameraPos[0],2)+Math.pow(this.pos[2]-cameraPos[2],2)) < Math.pow(range,2);
+  }
+
+  animate(timePassed) {
+
+  }
+
+  render(context) {
+    this.root.render(context);
+  }
+}
+
+class TransformationExtendedNode extends TransformationSGNode {
+
+  setMatrix(matrix) {
+    this.matrix = matrix;
+  }
+}
