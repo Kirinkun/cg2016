@@ -42,11 +42,11 @@ function init(resources) {
   colorLight = new ColorLightSGNode([0,-0.5,0],[0.0,0.0,0.0],createLightSphere(0.3,resources));
   rootNode.append(floorNode);
   rootNode.append(colorLight);
-  var s1 = new Scene1();
+  this.s1 = new Scene1();
   var trans = mat4.translate(mat4.create(),mat4.create(),[-1,0,-1]);
-  s1.setSceneTransformation(trans);
+  this.s1.setSceneTransformation(trans);
 
-  rootNode.append(s1);
+  rootNode.append(this.s1);
 
   rootNode.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
 
@@ -80,20 +80,27 @@ function render(timeInMilliseconds) {
   context.viewMatrix = camera.matrix;
   context.sceneMatrix = mat4.create();
 
-  rootNode.render(context);
-  requestAnimationFrame(render);
-
   var now = new Date().getTime();
-  elapsedTime += (now - lastTime);
+  var frameTime = (now - lastTime)
+  elapsedTime += frameTime;
   lastTime = now;
   if(elapsedTime >= 100) {
     elapsedTime -= 100;
 
     document.getElementById('cords').innerHTML = "Camera:<br/> x: " + Math.round(camera.pos[0]*1000)/1000 +
-        "<br/> y: " + Math.round(camera.pos[1]*1000)/1000 +
+      "<br/> y: " + Math.round(camera.pos[1]*1000)/1000 +
       "<br/> z: " + Math.round(camera.pos[2]*1000)/1000 +
-    "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
+      "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
   }
+
+  if(this.s1.isInRange(camera.pos,3)) {
+    this.s1.animate(frameTime);
+  } else {
+    this.s1.reset();
+  }
+  rootNode.render(context);
+  requestAnimationFrame(render);
+
 }
 
 class Camera{
