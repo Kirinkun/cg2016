@@ -19,12 +19,11 @@ var billNode;
 var elapsedTime, lastTime;
 
 const cloudModel = {
-  position: [-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0, 0, -1, 0],
-  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+  position: [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0],
+  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
   billNormal: [0, 0, 1],
-  billUp: [0, 1, 0],
   texture: [0, 0 /**/, 1, 0 /**/, 1, 1 /**/, 0, 1],
-  index: [0, 1, 2, 2, 3, 0, 1, 0, 4]
+  index: [0, 1, 2, 2, 3, 0]
 };
 
 /**
@@ -33,14 +32,16 @@ const cloudModel = {
 function init(resources) {
   gl = createContext();
   camera = new Camera(gl.canvas);
-  rootNode = new ShaderSGNode(createProgram(gl, resources.vs_view, resources.fs_view));
+  rootNode = new SetUniformSGNode('u_enableObjectTexture',1,new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture)));
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
-  billNode = new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel));
+  billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudstexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
   colorLight = new ColorLightSGNode([0,-0.5,0],[0.0,0.0,0.0],createLightSphere(0.3,resources));
-  rootNode.append(floorNode);
-  rootNode.append(colorLight);
-  rootNode.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+  var disableTexture = new SetUniformSGNode('u_enableObjectTexture',0);
+  rootNode.append(disableTexture);
+  disableTexture.append(floorNode);
+  disableTexture.append(new LightSGNode([0,0,0]));
+  disableTexture.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
 
   lastTime = new Date().getTime();
   elapsedTime = 0;
@@ -212,7 +213,10 @@ loadResources({
   vs_view: 'shader/view.vs.glsl',
   fs_view: 'shader/view.fs.glsl',
   vs_simple: 'shader/simple.vs.glsl',
-  fs_simple: 'shader/simple.fs.glsl'
+  fs_simple: 'shader/simple.fs.glsl',
+  vs_texture: 'shader/texture.vs.glsl',
+  fs_texture: 'shader/texture.fs.glsl',
+  cloudtexture: 'models/lava.jpg'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 
