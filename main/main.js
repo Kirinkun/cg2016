@@ -38,9 +38,10 @@ function init(resources) {
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
   billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
   colorLight = new LightSGNode([-2,0,0],createLightSphere(0.3,resources));
+  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
   disableText.append(floorNode);
   disableText.append(colorLight);
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+
 
   lastTime = new Date().getTime();
   elapsedTime = 0;
@@ -203,8 +204,8 @@ function convertDegreeToRadians(degree) {
 }
 
 function createLightSphere(size,resources) {
-  return
-  new RenderSGNode(makeSphere(size, 10, 10));
+  return new ShaderSGNode(createProgram(gl, resources.vs_simple, resources.fs_simple), [
+  new RenderSGNode(makeSphere(size, 10, 10))]);
 }
 
 //load the shader resources using a utility function
