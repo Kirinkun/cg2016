@@ -12,6 +12,15 @@ var cubeVertices = new Float32Array([
   -s, s,-s, -s, s, s, s, s, s, s, s,-s,
 ]);
 
+var ufoVertices = new Float32Array([
+  -s,0,-s, /**/ s,0,-s, /**/ -s, 0,s, /**/ -s, 0,-s,
+  s,0,s, /**/ s,0,-s, /**/ -s, 0,s, /**/ s, 0,s, //first plane ready! Now we make the top!
+  s,0,s, /**/ s,0,-s, /**/ 0, s/2,0, /**/ s, 0,s,
+  s,0,s, /**/ -s,0,s, /**/ 0, s/2,0, /**/ s, 0,s, //everything from 1,1 connected to top.
+  -s,0,-s, /**/ s,0,-s, /**/ 0, s/2,0, /**/ -s, 0,-s,
+  -s,0,-s, /**/ -s,0,s, /**/ 0, s/2,0, /**/ -s, 0,-s, //everything connected to top!
+]);
+
 var cubeColors = new Float32Array([
   0,1,1, 0,1,1, 0,1,1, 0,1,1,
   1,0,1, 1,0,1, 1,0,1, 1,0,1,
