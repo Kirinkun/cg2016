@@ -32,16 +32,15 @@ const cloudModel = {
 function init(resources) {
   gl = createContext();
   camera = new Camera(gl.canvas);
-  rootNode = new SetUniformSGNode('u_enableObjectTexture',1,new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture)));
+  var disableText = new SetUniformSGNode('u_enableObjectTexture',0);
+  rootNode = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
-  billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudstexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
-  colorLight = new ColorLightSGNode([0,-0.5,0],[0.0,0.0,0.0],createLightSphere(0.3,resources));
-  var disableTexture = new SetUniformSGNode('u_enableObjectTexture',0);
-  rootNode.append(disableTexture);
-  disableTexture.append(floorNode);
-  disableTexture.append(new LightSGNode([0,0,0]));
-  disableTexture.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+  billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
+  colorLight = new LightSGNode([-2,0,0],createLightSphere(0.3,resources));
+  disableText.append(floorNode);
+  disableText.append(colorLight);
+  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
 
   lastTime = new Date().getTime();
   elapsedTime = 0;
@@ -204,8 +203,8 @@ function convertDegreeToRadians(degree) {
 }
 
 function createLightSphere(size,resources) {
-  return new ShaderSGNode(createProgram(gl, resources.vs_simple, resources.fs_simple), [
-  new RenderSGNode(makeSphere(size, 10, 10))]);
+  return
+  new RenderSGNode(makeSphere(size, 10, 10));
 }
 
 //load the shader resources using a utility function

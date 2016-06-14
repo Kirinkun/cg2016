@@ -69,7 +69,7 @@ vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, ve
 void main (void) {
 
   vec4 textureColor = vec4(0,0,0,1);
-  if(u_enableObjectTextur)
+  if(u_enableObjectTexture)
   {
     //EXTRA TASK: animate texture coordinates
     vec2 wobblecoords = v_texCoord;
