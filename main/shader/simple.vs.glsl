@@ -21,5 +21,5 @@ void main() {
     * vec4(a_position, 1);
 
   //just copy the input color to the output varying color
-  v_color = vec4(a_color,1);
+  //v_color = vec4(a_color,1);
 }
