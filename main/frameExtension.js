@@ -130,10 +130,11 @@ class FreeSphericalBillboardNode extends TransformationSGNode{
 
 class SceneNode extends SGNode {
 
-  constructor(children) {
+  constructor(resources,children) {
     super(children);
     this.pos = mat4.create();
     this.root = new TransformationExtendedNode(this.pos, children);
+    this.resources = resources;
 
     this.reset();
   }

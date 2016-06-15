@@ -19,11 +19,11 @@ var billNode;
 var elapsedTime, lastTime;
 
 const cloudModel = {
-  position: [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0],
-  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+  position: [-1, -1, 0, /**/ 1, -1, 0, /**/ 1, 1, 0, /**/ -1, 1, 0],
+  normal: [0, 0, 1, /**/ 0, 0, 1, /**/ 0, 0, 1, /**/ 0, 0, 1],
   billNormal: [0, 0, 1],
   texture: [0, 0 /**/, 1, 0 /**/, 1, 1 /**/, 0, 1],
-  index: [0, 1, 2, 2, 3, 0]
+  index: [0, 1, 2, /**/ 2, 3, 0]
 };
 
 /**
@@ -34,7 +34,7 @@ function init(resources) {
   initCube();
 
   camera = new Camera(gl.canvas);
-  var disableText = new SetUniformSGNode('u_enableObjectTexture',0);
+  var disableText = new SetUniformSGNode('u_enableObjectTexture',1);
   rootNode = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
@@ -44,26 +44,46 @@ function init(resources) {
   light.diffuse = [0.8, 0.8, 0.8, 1];
   light.specular = [1, 1, 1, 1];
 
-  let translateLight = new TransformationSGNode(glm.translate(0,0,-2)); //translating the light is the same as setting the light position
+  translateLight = new TransformationSGNode(glm.translate(0,0,-2)); //translating the light is the same as setting the light position
 
   translateLight.append(light);
   translateLight.append(createLightSphere(0.3,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
   disableText.append(translateLight);
-  
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
-  disableText.append(floorNode);
 
-  this.s1 = new Scene1();
+  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+  disableText.append(createWorld(10, resources));
+
+  ufo = new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new RenderSGNode(resources.ufo)));
+  ufo.ambient = [0.24725, 0.1995, 0.0745, 1];
+  ufo.diffuse = [0.75164, 0.60648, 0.22648, 1];
+  ufo.specular = [0.628281, 0.555802, 0.366065, 1];
+  ufo.shininess = 0.4;
+  ufoTest = new TransformationSGNode(glm.transform({ translate: [-1,0,-1], scale: 0.1}), ufo);
+  disableText.append(ufoTest);
+  /*this.s1 = new Scene1();
   var trans = mat4.translate(mat4.create(),mat4.create(),[-1,0,-1]);
   this.s1.setSceneTransformation(trans);
-  s1.append(light);
-  rootNode.append(this.s1);
+
+  disableText.append(this.s1);*/
 
 
   lastTime = new Date().getTime();
   elapsedTime = 0;
 
   camera.initInteraction();
+}
+
+function createWorld(size, resources) {
+    world = new SGNode();
+
+    floor = new AdvancedTextureSGNode(resources.grass_tex,new RenderSGNode(makeRect(size,size)));
+    floor = new TransformationSGNode(glm.transform({ translate: [0, 1, 0], rotateX : 90 }),new MaterialSGNode(floor));
+
+    wall1 = new AdvancedTextureSGNode(resources.sky_tex,new RenderSGNode(makeRect(size,size)));
+
+    world.append(floor);
+
+    return world;
 }
 
 // ##################### test section end #####################
@@ -77,7 +97,8 @@ function render(timeInMilliseconds) {
 
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
   //specify the clear color
-  gl.clearColor(0.9, 0.9, 0.9, 1.0);
+  //0099CC
+  gl.clearColor(0.0, 160/256, 204/256, 1.0);
   //clear the buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.enable(gl.DEPTH_TEST);
@@ -103,11 +124,11 @@ function render(timeInMilliseconds) {
       "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
   }
 
-  if(this.s1.isInRange(camera.pos,3)) {
+  /*if(this.s1.isInRange(camera.pos,3)) {
     this.s1.animate(frameTime);
   } else {
     this.s1.reset();
-  }
+  }*/
   rootNode.render(context);
   requestAnimationFrame(render);
 
@@ -240,7 +261,9 @@ loadResources({
   fs_simple: 'shader/simple.fs.glsl',
   vs_texture: 'shader/texture.vs.glsl',
   fs_texture: 'shader/texture.fs.glsl',
-  cloudtexture: 'models/lava.jpg'
+  cloudtexture: 'models/lava.jpg',
+  grass_tex: 'models/grass.jpg',
+  ufo: 'models/betterUfoSmooth.obj'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 
