@@ -12,15 +12,6 @@ var cubeVertices = new Float32Array([
   -s, s,-s, -s, s, s, s, s, s, s, s,-s,
 ]);
 
-var cubeColors = new Float32Array([
-  0,1,1, 0,1,1, 0,1,1, 0,1,1,
-  1,0,1, 1,0,1, 1,0,1, 1,0,1,
-  1,0,0, 1,0,0, 1,0,0, 1,0,0,
-  0,0,1, 0,0,1, 0,0,1, 0,0,1,
-  1,1,0, 1,1,0, 1,1,0, 1,1,0,
-  0,1,0, 0,1,0, 0,1,0, 0,1,0
-]);
-
 var cubeIndices =  new Float32Array([
   0,1,2, 0,2,3,
   4,5,6, 4,6,7,
@@ -30,18 +21,49 @@ var cubeIndices =  new Float32Array([
   20,21,22, 20,22,23
 ]);
 
-function initCube() {
-  cubeVertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, cubeVertices, gl.STATIC_DRAW);
+function makeCube(s) {
+  var vertex = new Float32Array([
+    -s,-s,-s, s,-s,-s,  /**/ s, s,-s, -s, s,-s,
+    -s,-s, s, s,-s, s,  /**/ s, s, s, -s, s, s,
+    -s,-s,-s, -s, s,-s, /**/ -s, s, s, -s,-s, s,
+    s,-s,-s, s, s,-s,   /**/ s, s, s, s,-s, s,
+    -s,-s,-s, -s,-s, s, /**/ s,-s, s, s,-s,-s,
+    -s, s,-s, -s, s, s, /**/ s, s, s, s, s,-s,
+  ]);
 
-  cubeColorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, cubeColors, gl.STATIC_DRAW);
+  var index =  new Float32Array([
+    0,1,2, 0,2,3,
+    4,5,6, 4,6,7,
+    8,9,10, 8,10,11,
+    12,13,14, 12,14,15,
+    16,17,18, 16,18,19,
+    20,21,22, 20,22,23
+  ]);
 
-  cubeIndexBuffer = gl.createBuffer ();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
+  var texture = new Float32Array( [
+    0,0, 1,0, 1,1, 0,0,
+    0,0, 1,0, 1,1, 0,0,
+    0,0, 1,0, 1,1, 0,0,
+    0,0, 1,0, 1,1, 0,0,
+    0,0, 1,0, 1,1, 0,0,
+    0,0, 1,0, 1,1, 0,0,
+  ]);
+
+  var normal = new Float32Array([
+    0,0,1, 0,0,1, 0,0,1, 0,0,1,
+    0,0,1, 0,0,1, 0,0,1, 0,0,1,
+    0,0,1, 0,0,1, 0,0,1, 0,0,1,
+    0,0,1, 0,0,1, 0,0,1, 0,0,1,
+    0,0,1, 0,0,1, 0,0,1, 0,0,1,
+    0,0,1, 0,0,1, 0,0,1, 0,0,1
+  ]);
+
+  return {
+    position: vertex,
+    normal: normal,
+    texture: texture,
+    index: index
+  }
 }
 
 var cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer;
@@ -85,14 +107,13 @@ class RobotSGNode extends SGNode {
 
   constructor(children) {
     super(children);
-    //initCube();
 
-    this.rightArm = new TransformationExtendedNode(mat4.create(), new CubeNode());
-    this.leftArm = new TransformationExtendedNode(mat4.create(), new CubeNode());
-    this.body = new TransformationExtendedNode(mat4.create(), new CubeNode());
-    this.rightLeg = new TransformationExtendedNode(mat4.create(), new CubeNode());
-    this.leftLeg = new TransformationExtendedNode(mat4.create(), new CubeNode());
-    this.head = new TransformationExtendedNode(mat4.create(), new CubeNode());
+    this.rightArm = new TransformationSGNode(mat4.create(), new RenderSGNode(makeCube(0.3)));
+    this.leftArm = new TransformationSGNode(mat4.create(), new RenderSGNode(makeCube(0.3)));
+    this.body = new TransformationSGNode(mat4.create(), new RenderSGNode(makeCube(0.3)));
+    this.rightLeg = new TransformationSGNode(mat4.create(), new RenderSGNode(makeCube(0.3)));
+    this.leftLeg = new TransformationSGNode(mat4.create(), new RenderSGNode(makeCube(0.3)));
+    this.head = new TransformationSGNode(mat4.create(), new RenderSGNode(makeCube(0.3)));
 
 
     this.root = new SGNode(this.rightArm);
@@ -104,37 +125,20 @@ class RobotSGNode extends SGNode {
   }
 
   setRightArm(angle) {
-    var right = mat4.multiply(mat4.create(), mat4.create(), glm.rotateZ(angle));
-    right = mat4.multiply(mat4.create(), right, glm.translate(0.3,-0.1,0));
-    right = mat4.multiply(mat4.create(), right, glm.scale(1.2,0.22,0.3));
-    this.rightArm.setMatrix(right);
+    this.rightArm.matrix = glm.transform({translate: [0.3,-0.1,0], scale: [1.2,0.22,0.3], rotateZ: angle});
   }
 
   setLeftArm(angle) {
-    var right = mat4.multiply(mat4.create(), mat4.create(), glm.rotateZ(angle));
-    right = mat4.multiply(mat4.create(), right, glm.translate(-0.3,-0.1,0));
-    right = mat4.multiply(mat4.create(), right, glm.scale(1.2,0.22,0.3));
-    this.leftArm.setMatrix(right);
+    this.leftArm.matrix = glm.transform({translate: [-0.3,-0.1,0], scale: [1.2,0.22,0.3], rotateZ: angle});
   }
 
   setLegs(angle) {
-    var legTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateX(angle));
-    legTransformationMatrix = mat4.multiply(mat4.create(), legTransformationMatrix, glm.translate(-0.2,0.5,0));
-    legTransformationMatrix = mat4.multiply(mat4.create(), legTransformationMatrix, glm.scale(0.1,0.9,0.1));
-    this.leftLeg.setMatrix(legTransformationMatrix);
-
-    legTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateX(-angle));
-    legTransformationMatrix = mat4.multiply(mat4.create(), legTransformationMatrix, glm.translate(0.2,0.5,0));
-    legTransformationMatrix = mat4.multiply(mat4.create(), legTransformationMatrix, glm.scale(0.1,0.9,0.1));
-    this.rightLeg.setMatrix(legTransformationMatrix)
-
+    this.leftLeg.matrix = glm.transform({translate: [-0.2,0.5,0], scale: [0.1,0.9,0.1], rotateX: angle});
+    this.rightLeg.matrix = glm.transform({translate: [0.2,0.5,0], scale: [0.1,0.9,0.1], rotateX: -angle});
   }
 
   setHead(angle) {
-    var headTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(angle));
-    headTransformationMatrix = mat4.multiply(mat4.create(), headTransformationMatrix, glm.translate(0.0,-0.4,0));
-    headTransformationMatrix = mat4.multiply(mat4.create(), headTransformationMatrix, glm.scale(0.4,0.33,0.5));
-    this.head.setMatrix(headTransformationMatrix);
+    this.head.matrix = glm.transform({translate: [0,-0.4,0], scale: [0.4,0.33,0.5], rotateY: angle});
   }
 
   render(context) {

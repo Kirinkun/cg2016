@@ -132,16 +132,16 @@ class SceneNode extends SGNode {
 
   constructor(resources,children) {
     super(children);
-    this.pos = mat4.create();
-    this.root = new TransformationExtendedNode(this.pos, children);
+    this.pos = [0,0,0]
+    this.root = new TransformationSGNode(glm.transform({translate: this.pos}), children);
     this.resources = resources;
 
     this.reset();
   }
 
-  setSceneTransformation(transformation) {
-    this.pos = transformation;
-    this.root.setMatrix(transformation);
+  setSceneTransformation(x,y,z) {
+    this.pos = [x,y,z];
+    this.root.matrix = glm.transform({translate: this.pos});
   }
 
   reset() {
@@ -157,12 +157,5 @@ class SceneNode extends SGNode {
 
   render(context) {
     this.root.render(context);
-  }
-}
-
-class TransformationExtendedNode extends TransformationSGNode {
-
-  setMatrix(matrix) {
-    this.matrix = matrix;
   }
 }
