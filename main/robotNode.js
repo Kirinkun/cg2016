@@ -12,15 +12,6 @@ var cubeVertices = new Float32Array([
   -s, s,-s, -s, s, s, s, s, s, s, s,-s,
 ]);
 
-var ufoVertices = new Float32Array([
-  -s,0,-s, /**/ s,0,-s, /**/ -s, 0,s, /**/ -s, 0,-s,
-  s,0,s, /**/ s,0,-s, /**/ -s, 0,s, /**/ s, 0,s, //first plane ready! Now we make the top!
-  s,0,s, /**/ s,0,-s, /**/ 0, s/2,0, /**/ s, 0,s,
-  s,0,s, /**/ -s,0,s, /**/ 0, s/2,0, /**/ s, 0,s, //everything from 1,1 connected to top.
-  -s,0,-s, /**/ s,0,-s, /**/ 0, s/2,0, /**/ -s, 0,-s,
-  -s,0,-s, /**/ -s,0,s, /**/ 0, s/2,0, /**/ -s, 0,-s, //everything connected to top!
-]);
-
 var cubeColors = new Float32Array([
   0,1,1, 0,1,1, 0,1,1, 0,1,1,
   1,0,1, 1,0,1, 1,0,1, 1,0,1,
@@ -48,7 +39,7 @@ function initCube() {
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, cubeColors, gl.STATIC_DRAW);
 
-  this.cubeIndexBuffer = gl.createBuffer ();
+  cubeIndexBuffer = gl.createBuffer ();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
 }
