@@ -6,10 +6,20 @@ class Scene1 extends SceneNode {
 
   reset() {
     this.robot = new RobotSGNode(null);
-    this.ufo = new UfoSGNode(0.1);
-    
+    this.ufo = new UfoSGNode(0.5);
+    this.ufo = new MaterialSGNode(this.ufo);
+
+
+
+    this.ufo.ambient = [0.24725, 0.1995, 0.0745, 1];
+    this.ufo.diffuse = [0.75164, 0.60648, 0.22648, 1];
+    this.ufo.specular = [0.628281, 0.555802, 0.366065, 1];
+    this.ufo.shininess = 0.4;
+
+    this.ufo = new AdvancedTextureSGNode(this.resources.cloudtexture, this.ufo);
+
     this.root = new TransformationExtendedNode(this.pos, this.ufo);
-    //this.root.append(this.ufo);
+    this.root.append(this.robot);
     this.headAngle=0;
     this.armAngle=0;
     this.headAnglePerSec = 100;
