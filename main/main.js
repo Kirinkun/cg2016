@@ -39,13 +39,24 @@ function init(resources) {
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
   billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
-  colorLight = new LightSGNode([-2,0,0],createLightSphere(0.3,resources));
+  light = new LightSGNode([0,0,0]);
+  light.ambient = [0.2, 0.2, 0.2, 1];
+  light.diffuse = [0.8, 0.8, 0.8, 1];
+  light.specular = [1, 1, 1, 1];
+
+  let translateLight = new TransformationSGNode(glm.translate(0,0,-2)); //translating the light is the same as setting the light position
+
+  translateLight.append(light);
+  translateLight.append(createLightSphere(0.3,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
+  disableText.append(translateLight);
+  
   disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
   disableText.append(floorNode);
-  disableText.append(colorLight);
+
   this.s1 = new Scene1();
   var trans = mat4.translate(mat4.create(),mat4.create(),[-1,0,-1]);
   this.s1.setSceneTransformation(trans);
+  s1.append(light);
   rootNode.append(this.s1);
 
 
