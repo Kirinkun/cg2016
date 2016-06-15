@@ -6,8 +6,10 @@ class Scene1 extends SceneNode {
 
   reset() {
     this.robot = new RobotSGNode(null);
-
-    this.root = new TransformationExtendedNode(this.pos, this.robot);
+    this.ufo = new UfoSGNode(0.1);
+    
+    this.root = new TransformationExtendedNode(this.pos, this.ufo);
+    //this.root.append(this.ufo);
     this.headAngle=0;
     this.armAngle=0;
     this.headAnglePerSec = 100;
@@ -42,7 +44,4 @@ class Scene1 extends SceneNode {
   render(context) {
     super.render(context);
   }
-
-
-
 }
