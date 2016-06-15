@@ -8,6 +8,10 @@
  */
   /* Check this for spotlight
   http://www.tomdalling.com/blog/modern-opengl/08-even-more-lighting-directional-lights-spotlights-multiple-lights/
+
+   lightDirection in den Shader mitgeben
+   Davon müssen wir from Fragment den Winkel berechnen
+   Alles im FS
    */
 
 
