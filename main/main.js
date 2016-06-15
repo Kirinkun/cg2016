@@ -31,40 +31,32 @@ const cloudModel = {
  */
 function init(resources) {
   gl = createContext();
-  initCube();
 
   camera = new Camera(gl.canvas);
   var disableText = new SetUniformSGNode('u_enableObjectTexture',1);
   rootNode = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
-  billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
+  //billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
   light = new LightSGNode([0,0,0]);
   light.ambient = [0.2, 0.2, 0.2, 1];
   light.diffuse = [0.8, 0.8, 0.8, 1];
   light.specular = [1, 1, 1, 1];
 
-  translateLight = new TransformationSGNode(glm.translate(0,0,-2)); //translating the light is the same as setting the light position
+  translateLight = new TransformationSGNode(glm.translate(0,-0.5,-2)); //translating the light is the same as setting the light position
 
   translateLight.append(light);
-  translateLight.append(createLightSphere(0.3,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
+  translateLight.append(createLightSphere(0.05,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
   disableText.append(translateLight);
 
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+  //disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
   disableText.append(createWorld(10, resources));
 
-  ufo = new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new RenderSGNode(resources.ufo)));
-  ufo.ambient = [0.24725, 0.1995, 0.0745, 1];
-  ufo.diffuse = [0.75164, 0.60648, 0.22648, 1];
-  ufo.specular = [0.628281, 0.555802, 0.366065, 1];
-  ufo.shininess = 0.4;
-  ufoTest = new TransformationSGNode(glm.transform({ translate: [-1,0,-1], scale: 0.1}), ufo);
-  disableText.append(ufoTest);
-  /*this.s1 = new Scene1();
-  var trans = mat4.translate(mat4.create(),mat4.create(),[-1,0,-1]);
-  this.s1.setSceneTransformation(trans);
+  this.s1 = new Scene1(resources);
+  //var trans = mat4.translate(mat4.create(),mat4.create(),[0,0,7]);
+  this.s1.setSceneTransformation(0,0,7);
 
-  disableText.append(this.s1);*/
+  disableText.append(this.s1);
 
 
   lastTime = new Date().getTime();
@@ -78,8 +70,6 @@ function createWorld(size, resources) {
 
     floor = new AdvancedTextureSGNode(resources.grass_tex,new RenderSGNode(makeRect(size,size)));
     floor = new TransformationSGNode(glm.transform({ translate: [0, 1, 0], rotateX : 90 }),new MaterialSGNode(floor));
-
-    wall1 = new AdvancedTextureSGNode(resources.sky_tex,new RenderSGNode(makeRect(size,size)));
 
     world.append(floor);
 
@@ -124,11 +114,11 @@ function render(timeInMilliseconds) {
       "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
   }
 
-  /*if(this.s1.isInRange(camera.pos,3)) {
+  if(this.s1.isInRange(camera.pos,3)) {
     this.s1.animate(frameTime);
   } else {
     this.s1.reset();
-  }*/
+  }
   rootNode.render(context);
   requestAnimationFrame(render);
 
