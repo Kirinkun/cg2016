@@ -19,10 +19,10 @@ var billNode;
 var elapsedTime, lastTime;
 
 const cloudModel = {
-  position: [-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0],
+  position: [-1, -0.4, 0, 1, -0.4, 0, 1, 0.4, 0, -1, 0.4, 0],
   normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
   billNormal: [0, 0, 1],
-  texture: [0, 0 /**/, 1, 0 /**/, 1, 1 /**/, 0, 1],
+  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.4 /**/, 0, 0.4],
   index: [0, 1, 2, 2, 3, 0]
 };
 
@@ -49,16 +49,14 @@ function init(resources) {
   translateLight.append(light);
   translateLight.append(createLightSphere(0.3,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
   disableText.append(translateLight);
-  
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+
   disableText.append(floorNode);
 
   this.s1 = new Scene1();
   var trans = mat4.translate(mat4.create(),mat4.create(),[-1,0,-1]);
   this.s1.setSceneTransformation(trans);
-  s1.append(light);
-  rootNode.append(this.s1);
-
+  disableText.append(this.s1);
+  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
 
   lastTime = new Date().getTime();
   elapsedTime = 0;
@@ -80,7 +78,12 @@ function render(timeInMilliseconds) {
   gl.clearColor(0.9, 0.9, 0.9, 1.0);
   //clear the buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
   gl.enable(gl.DEPTH_TEST);
+
+  gl.enable(gl.BLEND);
+  //TASK 1-2
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   camera.nextFrame();
 
@@ -211,7 +214,7 @@ class Camera{
 
   nextFrame(){
     var camRotationMatrix = mat3.fromMat4(mat3.create(), mat4.multiply(mat4.create(),
-                                glm.rotateY(camera.rotation.x),
+                                glm.rotateY(-camera.rotation.x),
                                 glm.rotateX(camera.rotation.y)));
     var lookVec = vec3.transformMat3(vec3.create(), [0,0,1], camRotationMatrix);
     var upVec = vec3.transformMat3(vec3.create(), [0,1,0], camRotationMatrix);
@@ -240,7 +243,7 @@ loadResources({
   fs_simple: 'shader/simple.fs.glsl',
   vs_texture: 'shader/texture.vs.glsl',
   fs_texture: 'shader/texture.fs.glsl',
-  cloudtexture: 'models/lava.jpg'
+  cloudtexture: 'models/Cloud.png'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 

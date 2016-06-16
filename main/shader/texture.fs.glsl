@@ -62,29 +62,21 @@ vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, ve
 	vec4 c_diff = clamp(diffuse * light.diffuse * material.diffuse, 0.0, 1.0);
 	vec4 c_spec = clamp(spec * light.specular * material.specular, 0.0, 1.0);
 	vec4 c_em   = material.emission;
+	vec4 c = c_amb + c_diff + c_spec + c_em;
 
-  return c_amb + c_diff + c_spec + c_em;
+	if(u_enableObjectTexture)
+  {
+		c[3] = textureColor[3];
+	}
+  return c;
 }
 
 void main (void) {
 
   vec4 textureColor = vec4(0,0,0,1);
-  if(u_enableObjectTexture)
-  {
-    //EXTRA TASK: animate texture coordinates
-    vec2 wobblecoords = v_texCoord;
-    wobblecoords.s = wobblecoords.s + sin(wobblecoords.t*3.14+u_wobbleTime/100.0)*0.1;
-		textureColor = texture2D(u_tex,wobblecoords);
-
-    //TASK 2: integrate texture color into phong shader
-    //textureColor = texture2D(u_tex,v_texCoord);
-
-    //gl_FragColor =  vec4(0,0,0,1);
-    //TASK 1: simple texturing: replace vec4(0,0,0,1) with texture lookup
-    //gl_FragColor = texture2D(u_tex,v_texCoord);
-    //return;
-  }
-
+  if(u_enableObjectTexture){
+    textureColor = texture2D(u_tex,v_texCoord);
+  }	
 	gl_FragColor = calculateSimplePointLight(u_light, u_material, v_lightVec, v_normalVec, v_eyeVec, textureColor);
 
 }
