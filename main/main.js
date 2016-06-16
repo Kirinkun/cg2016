@@ -252,7 +252,7 @@ loadResources({
   fs_simple: 'shader/simple.fs.glsl',
   vs_texture: 'shader/texture.vs.glsl',
   fs_texture: 'shader/texture.fs.glsl',
-  cloudtexture: 'models/Cloud.png'
+  cloudtexture: 'models/Cloud.png',
   grass_tex: 'models/grass.jpg',
   ufo: 'models/betterUfoSmooth.obj',
   simple_tex: 'models/simple.bmp',
