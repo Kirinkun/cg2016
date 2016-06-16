@@ -136,12 +136,17 @@ class SceneNode extends SGNode {
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), children);
     this.resources = resources;
 
+    this.init();
     this.reset();
   }
 
   setSceneTransformation(x,y,z) {
     this.pos = [x,y,z];
     this.root.matrix = glm.transform({translate: this.pos});
+  }
+
+  init() {
+
   }
 
   reset() {
