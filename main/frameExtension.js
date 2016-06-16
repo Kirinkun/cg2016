@@ -8,6 +8,10 @@
  */
   /* Check this for spotlight
   http://www.tomdalling.com/blog/modern-opengl/08-even-more-lighting-directional-lights-spotlights-multiple-lights/
+
+   lightDirection in den Shader mitgeben
+   Davon müssen wir from Fragment den Winkel berechnen
+   Alles im FS
    */
 
 
@@ -126,17 +130,18 @@ class FreeSphericalBillboardNode extends TransformationSGNode{
 
 class SceneNode extends SGNode {
 
-  constructor(children) {
+  constructor(resources,children) {
     super(children);
-    this.pos = mat4.create();
-    this.root = new TransformationExtendedNode(this.pos, children);
+    this.pos = [0,0,0]
+    this.root = new TransformationSGNode(glm.transform({translate: this.pos}), children);
+    this.resources = resources;
 
     this.reset();
   }
 
-  setSceneTransformation(transformation) {
-    this.pos = transformation;
-    this.root.setMatrix(transformation);
+  setSceneTransformation(x,y,z) {
+    this.pos = [x,y,z];
+    this.root.matrix = glm.transform({translate: this.pos});
   }
 
   reset() {
@@ -152,12 +157,5 @@ class SceneNode extends SGNode {
 
   render(context) {
     this.root.render(context);
-  }
-}
-
-class TransformationExtendedNode extends TransformationSGNode {
-
-  setMatrix(matrix) {
-    this.matrix = matrix;
   }
 }
