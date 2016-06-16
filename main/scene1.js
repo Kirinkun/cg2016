@@ -26,15 +26,15 @@ class Scene1 extends SceneNode {
     this.ufo.specular = [0.628281, 0.555802, 0.366065, 1];
     this.ufo.shininess = 0.4;
 
-    this.ufo = new AdvancedTextureSGNode(this.resources.cloudtexture, this.ufo);
+    this.ufo = new AdvancedTextureSGNode(this.resources.node_tex, this.ufo);
     this.ufo = new TransformationSGNode(glm.transform({translate:[0,0.35,0]}),this.ufo);
 
     this.headAngle=0;
     this.headAnglePerSec = 10;
 
-    this.ufoSpeedPerSec=2/10000;
-    this.ufoPos=1;
-    this.ufo = new TransformationSGNode(glm.transform({translate:[0,0,0]}),this.ufo);
+    this.ufoSpeedPerSec=3/1000;
+    this.ufoPos=27;
+    this.ufo = new TransformationSGNode(glm.transform({translate:[this.ufoPos, -this.ufoPos,0]}),this.ufo);
 
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), this.ufo);
     this.root.append(this.renderRobot);

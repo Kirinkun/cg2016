@@ -114,7 +114,7 @@ function render(timeInMilliseconds) {
       "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
   }
 
-  if(this.s1.isInRange(camera.pos,3)) {
+  if(this.s1.isInRange(camera.pos,4)) {
     this.s1.animate(frameTime);
   } else {
     this.s1.reset();
@@ -254,7 +254,8 @@ loadResources({
   cloudtexture: 'models/lava.jpg',
   grass_tex: 'models/grass.jpg',
   ufo: 'models/betterUfoSmooth.obj',
-  simple_tex: 'models/simple.bmp'
+  simple_tex: 'models/simple.bmp',
+  node_tex: 'models/Node.bmp'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 
