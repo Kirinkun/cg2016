@@ -253,7 +253,8 @@ loadResources({
   fs_texture: 'shader/texture.fs.glsl',
   cloudtexture: 'models/lava.jpg',
   grass_tex: 'models/grass.jpg',
-  ufo: 'models/betterUfoSmooth.obj'
+  ufo: 'models/betterUfoSmooth.obj',
+  simple_tex: 'models/simple.bmp'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 

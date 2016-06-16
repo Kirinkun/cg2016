@@ -41,21 +41,40 @@ function makeCube(s) {
   ]);
 
   var texture = new Float32Array( [
-    0,0, 1,0, 1,1, 0,0,
-    0,0, 1,0, 1,1, 0,0,
-    0,0, 1,0, 1,1, 0,0,
-    0,0, 1,0, 1,1, 0,0,
-    0,0, 1,0, 1,1, 0,0,
-    0,0, 1,0, 1,1, 0,0,
+    0,0, 1/4,0, 1/4,1/4, 0,0, //FRONT
+    //Front has the upper quarter of the texture
+    1/4,0, 2/4,0, 2/4,1/4, 1/4,0, //BACK
+    2/4,0, 3/4,0, 3/4,1/4, 2/4,0, //LEFT
+    3/4,0, 1,0, 1,1/4, 3/4,0, //RIGHT
+    0,1/4, 1/4,1/4, 1/4,2/4, 0,1/4, //TOP
+    1/4,1/4, 2/4,1/4, 2/4,2/4, 1/4,1/4  //BOTTOM
   ]);
 
   var normal = new Float32Array([
-    0,0,1, 0,0,1, 0,0,1, 0,0,1,
-    0,0,1, 0,0,1, 0,0,1, 0,0,1,
-    0,0,1, 0,0,1, 0,0,1, 0,0,1,
-    0,0,1, 0,0,1, 0,0,1, 0,0,1,
-    0,0,1, 0,0,1, 0,0,1, 0,0,1,
-    0,0,1, 0,0,1, 0,0,1, 0,0,1
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    0.0,0.0,1.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    1.0,0.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0,
+    0.0,1.0,0.0
   ]);
 
   return {
@@ -67,38 +86,6 @@ function makeCube(s) {
 }
 
 var cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer;
-
-class CubeNode extends SGNode {
-
-  render(context) {
-      //initCube();
-      //setting the model view and projection matrix on shader
-      //setUpModelViewMatrix(context.sceneMatrix, context.viewMatrix);
-      var modelViewMatrix = mat4.multiply(mat4.create(), context.viewMatrix, context.sceneMatrix);
-      gl.uniformMatrix4fv(gl.getUniformLocation(context.shader, 'u_modelView'), false, modelViewMatrix);
-
-      //set position
-      var positionLocation = gl.getAttribLocation(context.shader, 'a_position');
-      gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-      gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
-      gl.enableVertexAttribArray(positionLocation);
-
-      //set color
-      /*var colorLocation = gl.getAttribLocation(context.shader, 'a_color');
-      gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
-      gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
-      gl.enableVertexAttribArray(colorLocation);*/
-
-      //set alpha
-      //gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 0.5);
-
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
-      gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
-
-      //render children
-      super.render(context);
-  }
-}
 
 class RobotSGNode extends SGNode {
 

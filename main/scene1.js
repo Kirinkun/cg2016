@@ -5,7 +5,7 @@
 class Scene1 extends SceneNode {
 
   reset() {
-    this.robot = new RobotSGNode(null);
+    this.robot = new RobotSGNode();
     this.renderRobot = new MaterialSGNode(this.robot);
 
     this.renderRobot.ambient = [0.24725, 0.1995, 0.0745, 1];
@@ -13,7 +13,7 @@ class Scene1 extends SceneNode {
     this.renderRobot.specular = [0.628281, 0.555802, 0.366065, 1];
     this.renderRobot.shininess = 0.4;
 
-    this.renderRobot = new AdvancedTextureSGNode(this.resources.cloudtexture, this.renderRobot);
+    this.renderRobot = new AdvancedTextureSGNode(this.resources.simple_tex, this.renderRobot);
     this.renderRobot = new TransformationSGNode(glm.transform({rotateX: 90, rotateZ: 90, translate:[0,0.71,0]}),this.renderRobot);
 
     this.ufo = new UfoSGNode(0.2);
