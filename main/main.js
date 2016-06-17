@@ -19,10 +19,10 @@ var billNode;
 var elapsedTime, lastTime;
 
 const cloudModel = {
-  position: [-1, -0.4, 0, 1, -0.4, 0, 1, 0.4, 0, -1, 0.4, 0],
+  position: [-1, -0.45, 0, 1, -0.45, 0, 1, 0.45, 0, -1, 0.45, 0],
   normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
   billNormal: [0, 0, 1],
-  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.4 /**/, 0, 0.4],
+  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.45 /**/, 0, 0.45],
   index: [0, 1, 2, 2, 3, 0]
 };
 
@@ -36,25 +36,44 @@ function init(resources) {
   var disableText = new SetUniformSGNode('u_enableObjectTexture',1);
   rootNode = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
-  floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
-  //billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
-  light = new LightSGNode([0,0,0]);
+  floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));var m;
+  billNode = new SetUniformSGNode('u_enableObjectTexture',1,m = new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
+  light = new SpotLightSGNode([0,0,0]);
   light.ambient = [0.2, 0.2, 0.2, 1];
-  light.diffuse = [0.8, 0.8, 0.8, 1];
+  light.diffuse = [0.8, 0.0,0.0, 1];
   light.specular = [1, 1, 1, 1];
+  light.spotDirection = [0,0,1];
+  light.spotSmoothExp = 0.4;
+  light2 = new SpotLightSGNode([0.3,0.3,0]);
+  light2.ambient = [0.2, 0.2, 0.2, 1];
+  light2.diffuse = [0.8, 0.8,0.0, 1];
+  light2.specular = [1, 1, 1, 1];
+  light2.spotDirection = [0,0,1];
+  light2.spotSmoothExp = 0.4;
+  light3 = new AdvancedLightSGNode([0,0,0]);
+  light3.ambient = [0.2, 0.2, 0.2, 1];
+  light3.diffuse = [0.4, 0.4,0.4, 1];
+  light3.specular = [1, 1, 1, 1];
+  light4 = new SpotLightSGNode([0.5,0,0]);
+  light4.ambient = [0.2, 0.2, 0.2, 1];
+  light4.diffuse = [0.8, 0.0,0.0, 1];
+  light4.specular = [1, 1, 1, 1];
 
   translateLight = new TransformationSGNode(glm.translate(0,-0.5,-2)); //translating the light is the same as setting the light position
 
   translateLight.append(light);
+  translateLight.append(light2);
+  translateLight.append(light3);
+  translateLight.append(light4);
   translateLight.append(createLightSphere(0.05,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
   disableText.append(translateLight);
 
-  disableText.append(createWorld(10, resources));
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
-
   this.s1 = new Scene1(resources);
+  this.s1.init();
   this.s1.setSceneTransformation(0,0,7);
   disableText.append(this.s1);
+  disableText.append(createWorld(10, resources));
+  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
   lastTime = new Date().getTime();
   elapsedTime = 0;
 

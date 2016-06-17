@@ -14,15 +14,83 @@
    Alles im FS
    */
 
+class AdvancedLightSGNode extends LightSGNode{
 
-class SpotLightSGNode extends LightSGNode {
+  constructor(position, children) {
+    super(position, children);
+    this.uniform = 'u_lights'
+  }
 
-  render(context) {
-    this.computeLightPosition(context);
-    this.setLight(context);
-    //render children
+  setLightPosition(context) {
+    const gl = context.gl;
+    const modUniform = this.uniform.slice(0,this.uniform.length-3)+ 'Pos' + this.uniform.slice(this.uniform.length-3);
+    if (!context.shader || !isValidUniformLocation(gl.getUniformLocation(context.shader, modUniform))) {
+      return;
+    }
+    const position = this._worldPosition || this.position;
+    gl.uniform3f(gl.getUniformLocation(context.shader, modUniform), position[0], position[1], position[2]);
+  }
+
+  setLightUniforms(context){
+    const gl = context.gl;
+    if(context.index === undefined || typeof context.index !== 'number'){
+      context.index = 0;
+    } else{
+      context.index = context.index + 1;
+    }
+    this._index = context.index;
+    //no materials in use
+    this.uniform = 'u_lights[' + this._index + ']';
+    if (!context.shader || !isValidUniformLocation(gl.getUniformLocation(context.shader, this.uniform+'.ambient'))) {
+      return;
+    }
+
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_lightsCount'), this._index + 1);
+
+    super.setLightUniforms(context);
+  }
+
+}
+
+class SpotLightSGNode extends AdvancedLightSGNode {
+
+  constructor(position, children){
+    super(position, children);
+
+    this.spotAngle = 10.0;
+    this.spotDirection = [0,1,0];
+    this.spotSmoothExp = 0.0;
+    this._worldSpotDirection = null;
+  }
+
+  setLightUniforms(context){
+    super.setLightUniforms(context);
+    const gl = context.gl;
+    //no materials in use
+    if (!context.shader || !isValidUniformLocation(gl.getUniformLocation(context.shader, this.uniform+'.ambient'))) {
+      return;
+    }
+
+    gl.uniform1i(gl.getUniformLocation(context.shader, this.uniform+'.isSpotLight'), true);
+    gl.uniform1f(gl.getUniformLocation(context.shader, this.uniform+'.spotAngle'), glMatrix.toRadian(this.spotAngle));
+    gl.uniform3f(gl.getUniformLocation(context.shader, this.uniform+'.spotDirection'), this._worldSpotDirection[0], this._worldSpotDirection[1], this._worldSpotDirection[2]);
+    gl.uniform1f(gl.getUniformLocation(context.shader, this.uniform+'.spotSmoothExp'), this.spotSmoothExp);
+  }
+
+  computeSpotDirection(context) {
+    //transform with the current model view matrix
+    const modelViewMatrix = mat4.multiply(mat4.create(), context.viewMatrix, context.sceneMatrix);
+    const original = this.spotDirection;
+    const vec =  vec4.transformMat4(vec4.create(), vec4.fromValues(original[0], original[1],original[2], 0), modelViewMatrix);
+
+    this._worldSpotDirection = vec;
+  }
+
+  render(context){
+    this.computeSpotDirection(context);
     super.render(context);
   }
+
 }
 
 class ViewRestrictedBillboardNode extends TransformationSGNode{
