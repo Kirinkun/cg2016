@@ -76,7 +76,6 @@ void main (void) {
   vec4 textureColor = vec4(0,0,0,1);
   if(u_enableObjectTexture){
     textureColor = texture2D(u_tex,v_texCoord);
-  }	
+  }
 	gl_FragColor = calculateSimplePointLight(u_light, u_material, v_lightVec, v_normalVec, v_eyeVec, textureColor);
-
 }

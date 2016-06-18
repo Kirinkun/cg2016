@@ -18,14 +18,6 @@ var billNode;
 
 var elapsedTime, lastTime;
 
-const cloudModel = {
-  position: [-1, -0.4, 0, 1, -0.4, 0, 1, 0.4, 0, -1, 0.4, 0],
-  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-  billNormal: [0, 0, 1],
-  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.4 /**/, 0, 0.4],
-  index: [0, 1, 2, 2, 3, 0]
-};
-
 /**
  * initializes OpenGL context, compile shader, and load buffers
  */
@@ -38,23 +30,25 @@ function init(resources) {
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));
   //billNode = new SetUniformSGNode('u_enableObjectTexture',1,new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
-  light = new LightSGNode([0,0,0]);
-  light.ambient = [0.2, 0.2, 0.2, 1];
-  light.diffuse = [0.8, 0.8, 0.8, 1];
-  light.specular = [1, 1, 1, 1];
-
-  translateLight = new TransformationSGNode(glm.translate(0,-0.5,-2)); //translating the light is the same as setting the light position
-
-  translateLight.append(light);
-  translateLight.append(createLightSphere(0.05,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
-  disableText.append(translateLight);
 
   disableText.append(createWorld(10, resources));
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
+  //disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
 
   this.s1 = new Scene1(resources);
   this.s1.setSceneTransformation(0,0,7);
+
+  this.s2 = new Scene2(resources);
+  this.s2.setSceneTransformation(-7,0,0);
+
+  this.s3 = new Scene3(resources);
+  this.s3.setSceneTransformation(0,0,-50);
+  this.shader3 = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture), new SetUniformSGNode('u_enableObjectTexture',1,this.s3));
+  disableText.append(this.shader3);
+  disableText.append(this.s2);
   disableText.append(this.s1);
+
+
+
   lastTime = new Date().getTime();
   elapsedTime = 0;
 
@@ -120,6 +114,11 @@ function render(timeInMilliseconds) {
   } else {
     this.s1.reset();
   }
+  if(this.s2.isInRange(camera.pos,4)) {
+    this.s2.animate(frameTime);
+  } else {
+    this.s2.reset();
+  }
   rootNode.render(context);
   requestAnimationFrame(render);
 
@@ -130,7 +129,7 @@ class Camera{
   constructor(canvas){
     this.canvas = canvas;
     this.moving = 0;
-    this.speed = 1.0;
+    this.speed = 5.0;
     this.pos = vec3.fromValues(0,0,0);
     this.rotation = {
       x: 0,
@@ -253,10 +252,12 @@ loadResources({
   vs_texture: 'shader/texture.vs.glsl',
   fs_texture: 'shader/texture.fs.glsl',
   cloudtexture: 'models/Cloud.png',
-  grass_tex: 'models/grass.jpg',
   ufo: 'models/betterUfoSmooth.obj',
   simple_tex: 'models/simple.bmp',
-  node_tex: 'models/Node.bmp'
+  node_tex: 'models/Node.bmp',
+  grass_tex: 'models/grass.jpg',
+  sky_tex: 'models/sky.jpg',
+  green_tex: 'models/green.png'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 
