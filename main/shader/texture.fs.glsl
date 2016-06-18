@@ -84,11 +84,7 @@ vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, ve
 	vec4 c_em   = material.emission;
 	vec4 c = c_amb + c_diff + c_spec + c_em;
 
-	if(u_enableObjectTexture)
-  {
-		c[3] = textureColor[3];
-	}
-  return c;
+	return c;
 }
 
 void main (void) {
@@ -103,6 +99,10 @@ void main (void) {
 			if(i < u_lightsCount){
 				fragColor += calculateSimplePointLight(u_lights[i], u_material, u_lightsPos[i] + v_eyeVec, v_normalVec, v_eyeVec, textureColor);
 			}
+	}
+	if(u_enableObjectTexture)
+  {
+		fragColor[3] = textureColor[3];
 	}
 	gl_FragColor = fragColor;
 }
