@@ -31,8 +31,22 @@ class Scene2 extends SceneNode {
     this.cloud2 = new TransformationSGNode(glm.transform({translate: [-8,-6,-3]}),this.cloud2);
 
     this.ufo = new AdvancedTextureSGNode(this.resources.node_tex, this.ufo);
-    this.ufoRot = new TransformationSGNode(glm.transform({rotateY:0}),this.ufo);
-    this.ufoScaleN = new TransformationSGNode(glm.transform({scale:1}),this.ufoRot);
+    this.lightRot = new TransformationSGNode(glm.transform({rotateX: 45, rotateY: 45}),new AdvancedTextureSGNode(this.resources.green_tex, new MaterialSGNode(new RenderSGNode(makeCube(0.3/100)))));
+
+    var light = new SpotLightSGNode([0,0,0]);
+    light.ambient = [0.2, 0.6, 0.2, 1];
+    light.diffuse = [0.2, 0.2, 0.2, 1];
+    light.specular = [0.1, 0.1, 0.1, 1];
+    light.spotDirection = [0,1,0];
+    light.spotSmoothExp = 0.2;
+
+    this.lightTrans = new TransformationSGNode(glm.transform({translate:[0.1,0.055,-0.1]}),this.lightRot);
+    this.lightTrans.append(light)//Append 2 lights - 1 spot, 1 normal
+
+    this.ufo.append(this.lightTrans);
+    //this.ufo.append(new RenderSGNode(makeCube(0.3/100)));
+    this.ufoScaleN = new TransformationSGNode(glm.transform({scale:1}),this.ufo);
+
     this.ufoTrans = new TransformationSGNode(glm.transform({translate:[-0.15,0.2,0.7]}),this.ufoScaleN);
 
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), this.ufoTrans);
@@ -67,6 +81,9 @@ class Scene2 extends SceneNode {
     this.ufoScaleN.matrix = glm.transform({scale: this.ufoScale});
     this.ufoTrans.matrix = glm.transform({translate: [-0.15-(this.ufoPos/5),(0.2-this.ufoPos),(0.70+this.ufoPos/3)]});
     this.robot.setHead(this.headAngle);
+    this.rotPos=0;
+    this.lightRot.matrix = glm.transform({rotateX: 45, rotateY:45, rotateZ: this.rotPos});
+    this.cubeRotSpeed=120/1000;
   }
 
 
@@ -75,6 +92,7 @@ class Scene2 extends SceneNode {
       this.headAngle += (this.headAnglePerSec/timePassed);
       this.ufoPos = this.ufoPos + this.ufoMoveSpeed*timePassed;
       this.ufoScale = this.ufoScale + this.ufoScalePerSec*timePassed;
+      this.rotPos += this.cubeRotSpeed*timePassed;
       if(this.headAngle > 360 ) {
         this.headAngle -= 360;
       } if(this.ufoPos > 5.3) {
@@ -82,12 +100,16 @@ class Scene2 extends SceneNode {
       } if(this.ufoScale > 20) {
         this.ufoScale = 20;
       }
+      if(this.rotPos > 360) {
+        this.rotPos -= 360;s
+      }
       this.isReset = 0;
     }
 
     //this.ufoRot.matrix = glm.transform({rotateY: this.headAngle*3/2});
     this.ufoScaleN.matrix = glm.transform({scale: this.ufoScale});
-    this.ufoTrans.matrix = glm.transform({translate: [-0.15-(this.ufoPos/5),(0.2-this.ufoPos),(0.70+this.ufoPos/3)]});
+    this.ufoTrans.matrix = glm.transform({translate: [-0.15-(this.ufoPos*1.1/3),(0.2-this.ufoPos),(0.70+(this.ufoPos/4))]});
+    this.lightRot.matrix=glm.transform({rotateZ: this.rotPos, rotateY: 45});
     this.robot.setHead(this.headAngle);
   }
 

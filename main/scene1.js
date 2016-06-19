@@ -55,16 +55,6 @@ class Scene1 extends SceneNode {
     this.ufoPos=27;
     this.ufo = new TransformationSGNode(glm.transform({translate:[this.ufoPos, -this.ufoPos,0]}),this.ufo);
 
-    var light = new LightSGNode([0,0,0]);
-    light.ambient = [0.2, 0.2, 0.2, 1];
-    light.diffuse = [0.8, 0.8, 0.8, 1];
-    light.specular = [1, 1, 1, 1];
-
-    var translateLight = new TransformationSGNode(glm.transform({translate: [0,0,-7]}));
-    translateLight = new TransformationSGNode(glm.translate(0,-7,0),translateLight); //translating the light is the same as setting the light position
-    translateLight.append(light);
-    translateLight.append(createLightSphere(0.5,this.resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
-
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), this.ufo);
     this.root.append(this.renderRobot);
     this.root.append(this.cloud1);
@@ -73,7 +63,6 @@ class Scene1 extends SceneNode {
     this.root.append(this.cloud4);
     this.root.append(this.cloud5);
     this.root.append(this.cloud6);
-    this.root.append(translateLight);
 
     this.isReset=0;
   }
