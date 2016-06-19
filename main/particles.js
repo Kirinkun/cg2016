@@ -114,13 +114,13 @@ class ParticlesSGNode extends RenderSGNode{
     this.particlesCount = this.maxParticlesCount;
     this.particleSmoothFactor = 0.67;
     for(var i = 0; i < this.particlesCount; i++){
-      this._particles[i].pos_size[0] = getRandomArbitrary(0.0,1.0);
-      this._particles[i].pos_size[1] = getRandomArbitrary(0.7,1.5);
-      this._particles[i].pos_size[2] = getRandomArbitrary(0.2,0.6);
+      this._particles[i].pos_size[0] = getRandomArbitrary(-0.5,0.5);
+      this._particles[i].pos_size[1] = getRandomArbitrary(0.0,0.3);
+      this._particles[i].pos_size[2] = getRandomArbitrary(-0.5,0.5);
       this._particles[i].pos_size[3] = 0.01;
-      this._particles[i].color[0] = 0.6;
-      this._particles[i].color[1] = 0.0;
-      this._particles[i].color[2] = 0.3;
+      this._particles[i].color[0] = 0.0;
+      this._particles[i].color[1] = 0.5;
+      this._particles[i].color[2] = 0.0;
       this._particles[i].color[3] = 1.0;
       this._particles[i].life = 1.0;
     }
@@ -129,26 +129,41 @@ class ParticlesSGNode extends RenderSGNode{
   animateParticles(){
     for(var i = 0; i < this.particlesCount; i++){
       this._particles[i].speed[0] += getRandomArbitrary(-0.00002,0.00002);
-      this._particles[i].speed[1] += getRandomArbitrary(-0.0001,0.00008);
+      this._particles[i].speed[1] += getRandomArbitrary(-0.002,-0.01);
       this._particles[i].speed[2] += getRandomArbitrary(-0.00002,0.00002);
       this._particles[i].pos_size[3] = Math.min(Math.max(this._particles[i].pos_size[3] + getRandomArbitrary(-0.0002,0.0002), 0.001), 0.012);
 
       this._particles[i].pos_size = vec3.add(this._particles[i].pos_size, this._particles[i].pos_size, this._particles[i].speed);
 
-      this._particles[i].color[1] += getRandomArbitrary(-0.03,0.03);
-      this._particles[i].color[2] += getRandomArbitrary(-0.002,0.003);
+      this._particles[i].color[1] += getRandomArbitrary(-0.2,0.4);
+      this._particles[i].life -= getRandomArbitrary(0.05,0.1);
+      //this._particles[i].color[2] += getRandomArbitrary(-0.002,0.003);
     }
   }
 
   sortParticles(context){
     var m = mat4.create();
     var mv = mat4.multiply(mat4.create(), context.viewMatrix, context.sceneMatrix);
+    var currentCnt = 0;
 
     //note: particles are perpendicular billboards
     for(var i = 0; i < this.particlesCount; i++){
       m = mat4.translate(m, mv, this._particles[i].pos_size); //could be optimized to just calc m[14]
+      if(this._particles[i].life >= 0) {
+        currentCnt++;
+      }
       this._particles[i].cameraDistance = Math.abs(m[14]);
     }
+    var livingParticles = new Array(currentCnt);
+    var y = 0;
+    for(var i = 0; i < this.particlesCount; i++){
+      if(this._particles[i].life >= 0) {
+        livingParticles[y] = this._particles[i];
+        y++;
+      }
+    }
+    this._particles = livingParticles; //Now particles can die in peace.
+    this.particlesCount = currentCnt;
     this._particles.sort(function(a, b) {
       return b.cameraDistance - a.cameraDistance;
     });
