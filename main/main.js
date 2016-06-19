@@ -18,14 +18,6 @@ var billNode;
 
 var elapsedTime, lastTime;
 
-const cloudModel = {
-  position: [-1, -0.45, 0, 1, -0.45, 0, 1, 0.45, 0, -1, 0.45, 0],
-  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-  billNormal: [0, 0, 1],
-  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.45 /**/, 0, 0.45],
-  index: [0, 1, 2, 2, 3, 0]
-};
-
 /**
  * initializes OpenGL context, compile shader, and load buffers
  */
@@ -34,7 +26,7 @@ function init(resources) {
 
   camera = new Camera(gl.canvas);
   var disableText = new SetUniformSGNode('u_enableObjectTexture',1);
-  rootNode = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
+  rootNode = new AdvancedShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   light = new SpotLightSGNode([0,0,0]);
   light.ambient = [0.2, 0.2, 0.2, 1];
@@ -60,10 +52,9 @@ function init(resources) {
   billNode = new SetUniformSGNode('u_enableObjectTexture',1,m = new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
 
   translateLight = new TransformationSGNode(glm.translate(0,-0.5,-2)); //translating the light is the same as setting the light position
-
   translateLight.append(light);
   translateLight.append(light2);
-  translateLight.append(light3);
+  //translateLight.append(light3);
   translateLight.append(light4);
   translateLight.append(createLightSphere(0.05,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
   disableText.append(translateLight);
@@ -77,11 +68,16 @@ function init(resources) {
 
   this.s3 = new Scene3(resources);
   this.s3.setSceneTransformation(0,0,-50);
-  this.shader3 = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture), new SetUniformSGNode('u_enableObjectTexture',1,this.s3));
+  this.shader3 = new AdvancedShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture), new SetUniformSGNode('u_enableObjectTexture',1,this.s3));
   disableText.append(this.shader3);
-  disableText.append(this.s2);
   disableText.append(this.s1);
+  disableText.append(this.s2);
+
   disableText.append(createWorld(10, resources));
+  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,0,5]),new ShaderSGNode(createProgram(gl, resources.vs_particle, resources.fs_particle), new ParticlesSGNode())));
+
+  //this.g = new ParticlesSGNode();
+
   disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
   lastTime = new Date().getTime();
   elapsedTime = 0;
@@ -118,6 +114,7 @@ function render(timeInMilliseconds) {
 
   gl.enable(gl.DEPTH_TEST);
 
+
   gl.enable(gl.BLEND);
   //TASK 1-2
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -140,7 +137,7 @@ function render(timeInMilliseconds) {
     document.getElementById('cords').innerHTML = "Camera:<br/> x: " + Math.round(camera.pos[0]*1000)/1000 +
       "<br/> y: " + Math.round(camera.pos[1]*1000)/1000 +
       "<br/> z: " + Math.round(camera.pos[2]*1000)/1000 +
-      "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
+      "<br/>rot: " + fps.value+"x " + camera.rotation.y + "y";
   }
 
   if(this.s1.isInRange(camera.pos,4)) {
@@ -163,7 +160,7 @@ class Camera{
   constructor(canvas){
     this.canvas = canvas;
     this.moving = 0;
-    this.speed = 5.0;
+    this.speed = 3.0;
     this.pos = vec3.fromValues(0,0,0);
     this.rotation = {
       x: 0,
@@ -273,7 +270,7 @@ function convertDegreeToRadians(degree) {
 }
 
 function createLightSphere(size,resources) {
-  return new ShaderSGNode(createProgram(gl, resources.vs_simple, resources.fs_simple), [
+  return new AdvancedShaderSGNode(createProgram(gl, resources.vs_simple, resources.fs_simple), [
   new RenderSGNode(makeSphere(size, 10, 10))]);
 }
 
@@ -285,6 +282,8 @@ loadResources({
   fs_simple: 'shader/simple.fs.glsl',
   vs_texture: 'shader/texture.vs.glsl',
   fs_texture: 'shader/texture.fs.glsl',
+  vs_particle: 'shader/particle.vs.glsl',
+  fs_particle: 'shader/particle.fs.glsl',
   cloudtexture: 'models/Cloud.png',
   ufo: 'models/betterUfoSmooth.obj',
   simple_tex: 'models/simple.bmp',

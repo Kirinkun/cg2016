@@ -14,6 +14,17 @@
    Alles im FS
    */
 
+class AdvancedShaderSGNode extends ShaderSGNode{
+
+  render(context){
+    var oldIndex = context.index;
+    context.index = undefined;
+    super.render(context);
+    context.index = oldIndex;
+  }
+
+}
+
 class AdvancedLightSGNode extends LightSGNode{
 
   constructor(position, children) {

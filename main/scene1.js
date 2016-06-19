@@ -2,13 +2,13 @@
  * Created by Peter on 13.06.2016.
  */
 
-const cloudModel = {
-  position: [-1, -0.4, 0, 1, -0.4, 0, 1, 0.4, 0, -1, 0.4, 0],
-  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-  billNormal: [0, 0, 1],
-  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.4 /**/, 0, 0.4],
-  index: [0, 1, 2, 2, 3, 0]
-};
+ const cloudModel = {
+   position: [-1, -0.45, 0, 1, -0.45, 0, 1, 0.45, 0, -1, 0.45, 0],
+   normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+   billNormal: [0, 0, 1],
+   texture: [0, 0 /**/, 1, 0 /**/, 1, 0.45 /**/, 0, 0.45],
+   index: [0, 1, 2, 2, 3, 0]
+ };
 
 class Scene1 extends SceneNode {
 
@@ -55,7 +55,7 @@ class Scene1 extends SceneNode {
     this.ufoPos=27;
     this.ufo = new TransformationSGNode(glm.transform({translate:[this.ufoPos, -this.ufoPos,0]}),this.ufo);
 
-    var light = new LightSGNode([0,0,0]);
+    var light = new AdvancedLightSGNode([0,0,0]);
     light.ambient = [0.2, 0.2, 0.2, 1];
     light.diffuse = [0.8, 0.8, 0.8, 1];
     light.specular = [1, 1, 1, 1];
@@ -66,6 +66,7 @@ class Scene1 extends SceneNode {
     translateLight.append(createLightSphere(0.5,this.resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
 
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), this.ufo);
+    this.root.append(translateLight);
     this.root.append(this.renderRobot);
     this.root.append(this.cloud1);
     this.root.append(this.cloud2);
@@ -73,7 +74,7 @@ class Scene1 extends SceneNode {
     this.root.append(this.cloud4);
     this.root.append(this.cloud5);
     this.root.append(this.cloud6);
-    this.root.append(translateLight);
+
 
     this.isReset=0;
   }
