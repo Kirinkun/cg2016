@@ -47,11 +47,14 @@ class Scene3 extends SceneNode {
     this.cubeRot.matrix=glm.transform({rotateX: 45, rotateY: 45});
     this.rotPos=45;
     this.cubeRotSpeed=120/1000;
+    this.resetParticles();
+  }
+
+  resetParticles() {
     this.cubeTrans.remove(this.particleNode);
     this.particleNode = new ShaderSGNode(createProgram(gl, this.resources.vs_particle, this.resources.fs_particle));
     this.cubeTrans.append(this.particleNode); //Basically reset the node.
   }
-
 
   animate(timePassed) {
     if(timePassed != 0)

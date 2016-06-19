@@ -115,7 +115,7 @@ class ParticlesSGNode extends RenderSGNode{
     this.particleSmoothFactor = 0.67;
     for(var i = 0; i < this.particlesCount; i++){
       this._particles[i].pos_size[0] = getRandomArbitrary(-0.5,0.5);
-      this._particles[i].pos_size[1] = getRandomArbitrary(0.0,0.3);
+      this._particles[i].pos_size[1] = getRandomArbitrary(0.1,0.4);
       this._particles[i].pos_size[2] = getRandomArbitrary(-0.5,0.5);
       this._particles[i].pos_size[3] = 0.01;
       this._particles[i].color[0] = 0.0;
@@ -127,16 +127,17 @@ class ParticlesSGNode extends RenderSGNode{
   }
 
   animateParticles(){
+    var fp = (1/fps.value);
     for(var i = 0; i < this.particlesCount; i++){
-      this._particles[i].speed[0] += getRandomArbitrary(-0.00002,0.00002);
-      this._particles[i].speed[1] += getRandomArbitrary(-0.002,-0.01);
-      this._particles[i].speed[2] += getRandomArbitrary(-0.00002,0.00002);
+      this._particles[i].speed[0] += getRandomArbitrary(-0.2,0.2)*fp;
+      this._particles[i].speed[1] += getRandomArbitrary(-0.1,-0.3)*fp;
+      this._particles[i].speed[2] += getRandomArbitrary(-0.2,0.2)*fp;
       this._particles[i].pos_size[3] = Math.min(Math.max(this._particles[i].pos_size[3] + getRandomArbitrary(-0.0002,0.0002), 0.001), 0.012);
 
       this._particles[i].pos_size = vec3.add(this._particles[i].pos_size, this._particles[i].pos_size, this._particles[i].speed);
 
       this._particles[i].color[1] += getRandomArbitrary(-0.2,0.4);
-      this._particles[i].life -= getRandomArbitrary(0.05,0.1);
+      this._particles[i].life -= getRandomArbitrary(0.4,1)*(fp);
       //this._particles[i].color[2] += getRandomArbitrary(-0.002,0.003);
     }
   }
