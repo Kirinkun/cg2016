@@ -27,16 +27,13 @@ class Scene3 extends SceneNode {
     light.diffuse = [0.2, 0.2, 0.2, 1];
     light.specular = [0.1, 0.1, 0.1, 1];
 
-    var translateLight = new TransformationSGNode(glm.transform({translate: [0,0,5.5]}));
-    translateLight.append(light);
-    translateLight.append(createLightSphere(0.2,this.resources));
-
     this.cubeTrans.append(light);
 
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), this.ufoTrans);
     this.root.append(this.cubeTrans);
 
     this.isReset=0;
+    this.cubeRotSpeed=120/1000;
   }
 
   reset() {
@@ -44,15 +41,22 @@ class Scene3 extends SceneNode {
       return;
     }
     this.isReset = 1;
+    this.cubeRot.matrix=glm.transform({rotateX: 45, rotateY: 45});
+    this.rotPos=45;
+    this.cubeRotSpeed=120/1000;
   }
 
 
   animate(timePassed) {
-    if(timePassed != 0) {
+    if(timePassed != 0)
+    {
+      this.rotPos += this.cubeRotSpeed*timePassed;
+      if(this.rotPos > 360) {
+        this.rotPos -= 360;
+      }
       this.isReset = 0;
     }
-
-    //this.ufoRot.matrix = glm.transform({rotateY: this.headAngle*3/2});
+    this.cubeRot.matrix=glm.transform({rotateZ: this.rotPos, rotateY: 45});
   }
 
   render(context) {
