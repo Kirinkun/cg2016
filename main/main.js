@@ -29,8 +29,8 @@ function init(resources) {
   rootNode = new AdvancedShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
   light3 = new AdvancedLightSGNode([0,0,0]);
-  light3.ambient = [0.3, 0.3, 0.3, 1];
-  light3.diffuse = [0.6, 0.6,0.6, 1];
+  light3.ambient = [0.2, 0.2, 0.2, 1];
+  light3.diffuse = [0.3, 0.3,0.3, 1];
   light3.specular = [0.5,0.5, 0.5, 1];
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));var m;
 
@@ -55,7 +55,6 @@ function init(resources) {
   disableText.append(this.s2);
 
   disableText.append(createWorld(10, resources));
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,0,5]),new ShaderSGNode(createProgram(gl, resources.vs_particle, resources.fs_particle), new ParticlesSGNode())));
   lastTime = new Date().getTime();
   elapsedTime = 0;
 

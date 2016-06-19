@@ -32,6 +32,9 @@ class Scene3 extends SceneNode {
     this.root = new TransformationSGNode(glm.transform({translate: this.pos}), this.ufoTrans);
     this.root.append(this.cubeTrans);
 
+    this.particleNode = new ShaderSGNode(createProgram(gl, this.resources.vs_particle, this.resources.fs_particle));
+    this.cubeTrans.append(this.particleNode);
+
     this.isReset=0;
     this.cubeRotSpeed=120/1000;
   }
@@ -44,6 +47,9 @@ class Scene3 extends SceneNode {
     this.cubeRot.matrix=glm.transform({rotateX: 45, rotateY: 45});
     this.rotPos=45;
     this.cubeRotSpeed=120/1000;
+    this.cubeTrans.remove(this.particleNode);
+    this.particleNode = new ShaderSGNode(createProgram(gl, this.resources.vs_particle, this.resources.fs_particle));
+    this.cubeTrans.append(this.particleNode); //Basically reset the node.
   }
 
 
@@ -57,6 +63,7 @@ class Scene3 extends SceneNode {
       this.isReset = 0;
     }
     this.cubeRot.matrix=glm.transform({rotateZ: this.rotPos, rotateY: 45});
+    this.particleNode.append(new ParticlesSGNode(Math.round(timePassed/6)));
   }
 
   render(context) {
