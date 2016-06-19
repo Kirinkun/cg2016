@@ -108,14 +108,14 @@ function render(timeInMilliseconds) {
   var frameTime = (now - lastTime)
   elapsedTime += frameTime;
   lastTime = now;
-  if(elapsedTime >= 100) {
+  /*if(elapsedTime >= 100) {
     elapsedTime -= 100;
 
     document.getElementById('cords').innerHTML = "Time: " + Math.round(timeInMilliseconds*1000)/1000000 +"s<br/>Camera:<br/> x: " + Math.round(camera.pos[0]*1000)/1000 +
       "<br/> y: " + Math.round(camera.pos[1]*1000)/1000 +
       "<br/> z: " + Math.round(camera.pos[2]*1000)/1000 +
       "<br/>rot: " + fps.value+"x " + camera.rotation.y + "y";
-  }
+  }*/
 
   if(this.s1.isInRange(camera.pos,5.1)) {
     this.s1.animate(frameTime);
