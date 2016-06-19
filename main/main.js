@@ -120,7 +120,7 @@ function render(timeInMilliseconds) {
   } else {
     this.s1.reset();
   }
-  if(this.s2.isInRange(camera.pos,4)) {
+  if(this.s2.isInRange(camera.pos,5)) {
     this.s2.animate(frameTime);
   } else {
     this.s2.reset();
@@ -161,22 +161,22 @@ class Camera{
           camera.pos[0] = 3;
           camera.pos[1] = -0.5;
           camera.pos[2] = 3;
-          this.rotation.x = -90;
-          this.rotation.y = 40;
+          this.rotation.x = -70;
+          this.rotation.y = 30;
         }
         camera.pos[0] = Math.max(3-timePassed*(0.3/1000),3);
-        this.rotation.x = Math.min(-70+timePassed*(7.7/1000),0);
-        this.rotation.y = Math.max(30-timePassed*(2/1000),10);
+        this.rotation.x = Math.min(-70+timePassed*(7/1000),0);
+        this.rotation.y = Math.max(40-timePassed*(3/1000),10);
       } else if(timePassed < 22000) { //22 seconds passed
         if(!this.s2Started) {
           this.s2Started = true;
-          camera.pos[0] = -4.5;
-          camera.pos[1] = -0.5;
+          camera.pos[0] = -3;
+          camera.pos[1] = -1;
           camera.pos[2] = 0;
           this.rotation.x = 90;
           this.rotation.y = 0;
         }
-        this.rotation.y = Math.min(0+(timePassed-11000)*(5.2/1000),50);
+        this.rotation.y = Math.min(0+(timePassed-11000)*(3/1000),30);
       } else if(timePassed < 33000) { //22 seconds passed
         if(!this.s3Started) {
           this.s3Started = true;
