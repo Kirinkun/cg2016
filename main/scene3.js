@@ -22,7 +22,7 @@ class Scene3 extends SceneNode {
     this.cubeRot = new TransformationSGNode(glm.transform({rotateX: 45, rotateY: 45}),this.cube);
     this.cubeTrans = new TransformationSGNode(glm.transform({translate:[0,-0.08,5.5]}),this.cubeRot);
 
-    var light = new LightSGNode([0,0,5.5]);
+    var light = new AdvancedLightSGNode([0,0,5.5]);
     light.ambient = [0.1, 0.3, 0.2, 1];
     light.diffuse = [0.2, 0.2, 0.2, 1];
     light.specular = [0.1, 0.1, 0.1, 1];

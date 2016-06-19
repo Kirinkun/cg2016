@@ -112,6 +112,9 @@ class Scene1 extends SceneNode {
     //var calcArmAngle = Math.sin(this.armAngle)*30;
     this.ufo.matrix = glm.transform({translate: [this.ufoPos, -this.ufoPos,0]});
     this.robot.setHead(this.headAngle);
+    this.robot.setRightArm(0);
+    this.robot.setLeftArm(0);
+    this.robot.setLegs(0);
   }
 
   render(context) {

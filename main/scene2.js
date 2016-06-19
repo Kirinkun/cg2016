@@ -60,6 +60,13 @@ class Scene2 extends SceneNode {
     this.robot.setLeftArm(0);
     this.robot.setHead(this.headAngle);
     this.robot.setLegs(0);
+
+    this.ufoScalePerSec=2.2/1000;
+    this.ufoMoveSpeed=0.6/1000;
+    this.ufoScale=1;
+    this.ufoScaleN.matrix = glm.transform({scale: this.ufoScale});
+    this.ufoTrans.matrix = glm.transform({translate: [-0.15-(this.ufoPos/5),(0.2-this.ufoPos),(0.70+this.ufoPos/3)]});
+    this.robot.setHead(this.headAngle);
   }
 
 
@@ -70,8 +77,8 @@ class Scene2 extends SceneNode {
       this.ufoScale = this.ufoScale + this.ufoScalePerSec*timePassed;
       if(this.headAngle > 360 ) {
         this.headAngle -= 360;
-      } if(this.ufoPos > 7) {
-        this.ufoPos = 7;
+      } if(this.ufoPos > 5.3) {
+        this.ufoPos = 5.3;
       } if(this.ufoScale > 20) {
         this.ufoScale = 20;
       }

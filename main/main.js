@@ -18,14 +18,6 @@ var billNode;
 
 var elapsedTime, lastTime;
 
-const cloudModel = {
-  position: [-1, -0.45, 0, 1, -0.45, 0, 1, 0.45, 0, -1, 0.45, 0],
-  normal: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-  billNormal: [0, 0, 1],
-  texture: [0, 0 /**/, 1, 0 /**/, 1, 0.45 /**/, 0, 0.45],
-  index: [0, 1, 2, 2, 3, 0]
-};
-
 /**
  * initializes OpenGL context, compile shader, and load buffers
  */
@@ -122,6 +114,7 @@ function render(timeInMilliseconds) {
   //TASK 1-2
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+  camera.animate(timeInMilliseconds);
   camera.nextFrame();
 
   const context = createSGContext(gl);
@@ -137,13 +130,13 @@ function render(timeInMilliseconds) {
   if(elapsedTime >= 100) {
     elapsedTime -= 100;
 
-    document.getElementById('cords').innerHTML = "Camera:<br/> x: " + Math.round(camera.pos[0]*1000)/1000 +
+    document.getElementById('cords').innerHTML = "Time: " + Math.round(timeInMilliseconds*1000)/1000000 +"s<br/>Camera:<br/> x: " + Math.round(camera.pos[0]*1000)/1000 +
       "<br/> y: " + Math.round(camera.pos[1]*1000)/1000 +
       "<br/> z: " + Math.round(camera.pos[2]*1000)/1000 +
       "<br/>rot: " + camera.rotation.x+"x " + camera.rotation.y + "y";
   }
 
-  if(this.s1.isInRange(camera.pos,4)) {
+  if(this.s1.isInRange(camera.pos,5.1)) {
     this.s1.animate(frameTime);
   } else {
     this.s1.reset();
@@ -171,6 +164,47 @@ class Camera{
     }
     this.animatedFlight = true;
     this.matrix = null;
+    this.s1Started=false;
+    this.s2Started=false;
+    this.s3Started=false;
+  }
+
+  animate(timePassed) {
+    if(this.animatedFlight == true) {
+      if(timePassed < 11000) { //11 Seconds passed
+        if(!this.s1Started) {
+          this.s1Started = true;
+          camera.pos[0] = 3;
+          camera.pos[1] = -0.5;
+          camera.pos[2] = 3;
+          this.rotation.x = -90;
+          this.rotation.y = 40;
+        }
+        camera.pos[0] = Math.max(3-timePassed*(0.3/1000),3);
+        this.rotation.x = Math.min(-70+timePassed*(7.7/1000),0);
+        this.rotation.y = Math.max(30-timePassed*(2/1000),10);
+      } else if(timePassed < 22000) { //22 seconds passed
+        if(!this.s2Started) {
+          this.s2Started = true;
+          camera.pos[0] = -4.5;
+          camera.pos[1] = -0.5;
+          camera.pos[2] = 0;
+          this.rotation.x = 90;
+          this.rotation.y = 0;
+        }
+        this.rotation.y = Math.min(0+(timePassed-11000)*(5.2/1000),50);
+      } else if(timePassed < 33000) { //22 seconds passed
+        if(!this.s3Started) {
+          this.s3Started = true;
+          camera.pos[0] = 0;
+          camera.pos[1] = 0;
+          camera.pos[2] = -10;
+          this.rotation.x = 180;
+          this.rotation.y = 0;
+        }
+        camera.pos[2] = Math.max(-10-(timePassed-22000)*(3.3/1000), -40);
+      }
+    }
   }
 
   initInteraction() {
