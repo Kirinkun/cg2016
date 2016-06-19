@@ -28,35 +28,15 @@ function init(resources) {
   var disableText = new SetUniformSGNode('u_enableObjectTexture',1);
   rootNode = new ShaderSGNode(createProgram(gl, resources.vs_texture, resources.fs_texture),disableText);
   floorNode = new TransformationSGNode(null,new RenderSGNode(cloudModel));
-  light = new SpotLightSGNode([0,0,0]);
-  light.ambient = [0.2, 0.2, 0.2, 1];
-  light.diffuse = [0.8, 0.0,0.0, 1];
-  light.specular = [1, 1, 1, 1];
-  light.spotDirection = [0,0,1];
-  light.spotSmoothExp = 0.4;
-  light2 = new SpotLightSGNode([0.3,0.3,0]);
-  light2.ambient = [0.2, 0.2, 0.2, 1];
-  light2.diffuse = [0.8, 0.8,0.0, 1];
-  light2.specular = [1, 1, 1, 1];
-  light2.spotDirection = [0,0,1];
-  light2.spotSmoothExp = 0.4;
   light3 = new AdvancedLightSGNode([0,0,0]);
-  light3.ambient = [0.2, 0.2, 0.2, 1];
-  light3.diffuse = [0.4, 0.4,0.4, 1];
-  light3.specular = [1, 1, 1, 1];
-  light4 = new SpotLightSGNode([0.5,0,0]);
-  light4.ambient = [0.2, 0.2, 0.2, 1];
-  light4.diffuse = [0.8, 0.0,0.0, 1];
-  light4.specular = [1, 1, 1, 1];
+  light3.ambient = [0.3, 0.3, 0.3, 1];
+  light3.diffuse = [0.6, 0.6,0.6, 1];
+  light3.specular = [0.5,0.5, 0.5, 1];
   floorNode.matrix = mat4.rotateX(mat4.create(),floorNode.matrix, convertDegreeToRadians(90));var m;
-  billNode = new SetUniformSGNode('u_enableObjectTexture',1,m = new MaterialSGNode(new AdvancedTextureSGNode(resources.cloudtexture, new ViewRestrictedBillboardNode(true, new RenderSGNode(cloudModel)))));
 
-  translateLight = new TransformationSGNode(glm.translate(0,-0.5,-2)); //translating the light is the same as setting the light position
+  translateLight = new TransformationSGNode(glm.translate(0,-7,0)); //translating the light is the same as setting the light position
 
-  translateLight.append(light);
-  translateLight.append(light2);
   translateLight.append(light3);
-  translateLight.append(light4);
   translateLight.append(createLightSphere(0.05,resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
   disableText.append(translateLight);
 
@@ -74,7 +54,6 @@ function init(resources) {
   disableText.append(this.s2);
   disableText.append(this.s1);
   disableText.append(createWorld(10, resources));
-  disableText.append(new TransformationSGNode(mat4.translate(mat4.create(),mat4.create(),[0,-0.5,0]),billNode));
   lastTime = new Date().getTime();
   elapsedTime = 0;
 
@@ -146,6 +125,11 @@ function render(timeInMilliseconds) {
   } else {
     this.s2.reset();
   }
+  if(this.s3.isInRange(camera.pos,45)) {
+    this.s3.animate(frameTime);
+  } else {
+    this.s3.reset();
+  }
   rootNode.render(context);
   requestAnimationFrame(render);
 
@@ -202,7 +186,7 @@ class Camera{
           this.rotation.x = 180;
           this.rotation.y = 0;
         }
-        camera.pos[2] = Math.max(-10-(timePassed-22000)*(3.3/1000), -40);
+        camera.pos[2] = Math.max(-10-(timePassed-22000)*(3.7/1000), -40);
       }
     }
   }
@@ -223,65 +207,73 @@ class Camera{
       };
     }
     canvas.addEventListener('mousedown', function(event) {
-      camera.animatedFlight = false;
-      mouse.pos = toPos(event);
-      mouse.leftButtonDown = event.button === 0;
+      if(!camera.animatedFlight) {
+        mouse.pos = toPos(event);
+        mouse.leftButtonDown = event.button === 0;
+      }
     });
     this.canvas.addEventListener('mousemove', function(event) {
-      const pos = toPos(event);
-      const delta = { x : mouse.pos.x - pos.x, y: mouse.pos.y - pos.y };
-      //TASK 0-1 add delta mouse to camera.rotation if the left mouse button is pressed
-      if (mouse.leftButtonDown) {
-        camera.animatedFlight = false;
-        //add the relative movement of the mouse to the rotation variables
-    		camera.rotation.x += delta.x;
-    		camera.rotation.y += delta.y;
+      if(!camera.animatedFlight) {
+        const pos = toPos(event);
+        const delta = {x: mouse.pos.x - pos.x, y: mouse.pos.y - pos.y};
+        //TASK 0-1 add delta mouse to camera.rotation if the left mouse button is pressed
+        if (mouse.leftButtonDown) {
+          //add the relative movement of the mouse to the rotation variables
+          camera.rotation.x += delta.x;
+          camera.rotation.y += delta.y;
+        }
+        mouse.pos = pos;
       }
-      mouse.pos = pos;
     });
     canvas.addEventListener('mouseup', function(event) {
-      camera.animatedFlight = false;
-      mouse.pos = toPos(event);
-      mouse.leftButtonDown = false;
+      if(!camera.animatedFlight) {
+        mouse.pos = toPos(event);
+        mouse.leftButtonDown = false;
+      }
     });
     var upDown = false;
     var downDown = false;
     //register globally
     document.addEventListener('keydown', function(event) {
-      camera.animatedFlight = false;
-      if (event.code === 'KeyR') {
-        camera.rotation.x = 0;
-    		camera.rotation.y = 0;
-      }else if(event.code === 'ArrowUp'){
-        upDown = true;
-        if(!downDown){
-          camera.moving = 1;
-        }
-      }else if(event.code === 'ArrowDown'){
-        downDown = true;
-        if(!upDown){
-          camera.moving = -1;
+      if (event.code === 'KeyC') {
+        camera.animatedFlight = false;
+      }
+      if(!camera.animatedFlight) {
+        if (event.code === 'KeyR') {
+          camera.rotation.x = 0;
+          camera.rotation.y = 0;
+        } else if (event.code === 'ArrowUp') {
+          upDown = true;
+          if (!downDown) {
+            camera.moving = 1;
+          }
+        } else if (event.code === 'ArrowDown') {
+          downDown = true;
+          if (!upDown) {
+            camera.moving = -1;
+          }
         }
       }
     });
     document.addEventListener('keyup', function(event) {
-      camera.animatedFlight = false;
-      if(event.code === 'ArrowUp'){
-        upDown = false;
-        if(camera.moving == 1){
-          if(downDown){
-            camera.moving = -1;
-          }else{
-            camera.moving = 0;
+      if(!camera.animatedFlight) {
+        if (event.code === 'ArrowUp') {
+          upDown = false;
+          if (camera.moving == 1) {
+            if (downDown) {
+              camera.moving = -1;
+            } else {
+              camera.moving = 0;
+            }
           }
-        }
-      }else if(event.code === 'ArrowDown'){
-        downDown = false;
-        if(camera.moving == -1){
-          if(upDown){
-            camera.moving = 1;
-          }else{
-            camera.moving = 0;
+        } else if (event.code === 'ArrowDown') {
+          downDown = false;
+          if (camera.moving == -1) {
+            if (upDown) {
+              camera.moving = 1;
+            } else {
+              camera.moving = 0;
+            }
           }
         }
       }
